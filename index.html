@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vfx-gotanda</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+            background: #0d0d0f;
+            color: #f5f5f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* パーティクル背景 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+        .particle:nth-child(1) { left: 10%; animation-delay: -2s; animation-duration: 12s; }
+        .particle:nth-child(2) { left: 25%; animation-delay: -8s; animation-duration: 18s; }
+        .particle:nth-child(3) { left: 40%; animation-delay: -4s; animation-duration: 14s; }
+        .particle:nth-child(4) { left: 55%; animation-delay: -11s; animation-duration: 16s; }
+        .particle:nth-child(5) { left: 70%; animation-delay: -6s; animation-duration: 13s; }
+        .particle:nth-child(6) { left: 85%; animation-delay: -14s; animation-duration: 17s; }
+        .particle:nth-child(7) { left: 15%; animation-delay: -9s; animation-duration: 15s; width: 3px; height: 3px; }
+        .particle:nth-child(8) { left: 60%; animation-delay: -3s; animation-duration: 19s; width: 2px; height: 2px; }
+        .particle:nth-child(9) { left: 30%; animation-delay: -16s; animation-duration: 20s; }
+        .particle:nth-child(10) { left: 75%; animation-delay: -7s; animation-duration: 14s; }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; transform: translateY(80vh) scale(1) rotate(20deg); }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-10vh) scale(0.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* たまに出る絵文字 */
+        .emoji-particle {
+            position: fixed;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: emoji-float 12s ease-in-out forwards;
+            z-index: 0;
+        }
+        @keyframes emoji-float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        main {
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* タイトル + グロー */
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: letter-spacing 0.3s, text-shadow 0.3s;
+        }
+        h1:hover {
+            letter-spacing: 0.1em;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        .sparkle {
+            display: inline-block;
+            animation: twinkle 1.5s ease-in-out infinite;
+            color: #fc4d50;
+            text-shadow: 0 0 10px rgba(252, 77, 80, 0.8);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+
+        /* カード */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .desc {
+            font-size: 0.95rem;
+            line-height: 1.9;
+            color: #e5e5e7;
+        }
+        .notice {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #86868b;
+            font-size: 0.75rem;
+            line-height: 1.6;
+        }
+
+        /* ボタン + グロー */
+        .btn {
+            display: block;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #fc4d50 0%, #f02e31 100%);
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(252, 77, 80, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow:
+                0 8px 30px rgba(252, 77, 80, 0.5),
+                0 0 40px rgba(252, 77, 80, 0.3);
+        }
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 2px 10px rgba(252, 77, 80, 0.4);
+            transition: transform 0.05s;
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s, opacity 0.4s;
+            opacity: 0;
+        }
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+            opacity: 1;
+            transition: 0s;
+        }
+
+        /* 更新日 */
+        .updated {
+            margin-top: 2rem;
+            text-align: center;
+            color: #555;
+            font-size: 0.7rem;
+        }
+
+        /* クリックエフェクト */
+        .sparkle-click {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 1.2rem;
+            color: #fc4d50;
+            text-shadow: 0 0 10px rgba(252, 77, 80, 0.8);
+            animation: sparkle-burst 0.8s ease-out forwards;
+        }
+        @keyframes sparkle-burst {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮遊パーティクル -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <main>
+        <h1>vfx-gotanda <span class="sparkle">✦</span></h1>
+
+        <div class="card">
+            <p class="desc">Unreal EngineでVFXを制作するための素材やツールを配布しています。VFXデザイナーの皆様の助けになれば幸いです。</p>
+            <p class="notice">※ 個人の趣味活動であり、所属企業とは一切関係ありません。</p>
+        </div>
+
+        <a href="https://vfx-gotanda.booth.pm/" class="btn" target="_blank" rel="noopener">Booth</a>
+
+        <p class="updated">Last updated: 2025/12/12</p>
+    </main>
+
+    <script>
+        // クリック/タップで✦キラキラエフェクト
+        document.addEventListener('click', (e) => {
+            const sparkles = ['✦', '✧', '✦', '✧', '✦'];
+            for (let i = 0; i < sparkles.length; i++) {
+                setTimeout(() => {
+                    const s = document.createElement('div');
+                    s.className = 'sparkle-click';
+                    s.textContent = sparkles[i];
+                    const offsetX = (Math.random() - 0.5) * 60;
+                    const offsetY = (Math.random() - 0.5) * 60;
+                    s.style.left = (e.clientX + offsetX) + 'px';
+                    s.style.top = (e.clientY + offsetY) + 'px';
+                    s.style.animationDelay = (i * 0.05) + 's';
+                    document.body.appendChild(s);
+                    setTimeout(() => s.remove(), 800);
+                }, i * 50);
+            }
+        });
+
+        // たまに絵文字が下から流れてくる
+        const emojis = ['✨', '🔥', '💫', '⚡', '🎮', '🎨', '💎', '🌟'];
+        function spawnEmoji() {
+            const emoji = document.createElement('div');
+            emoji.className = 'emoji-particle';
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = Math.random() * 100 + '%';
+            emoji.style.bottom = '-50px';
+            document.body.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 12000);
+        }
+        // 8〜20秒のランダム間隔で絵文字を出す
+        function scheduleEmoji() {
+            const delay = 8000 + Math.random() * 12000;
+            setTimeout(() => {
+                spawnEmoji();
+                scheduleEmoji();
+            }, delay);
+        }
+        scheduleEmoji();
+    </script>
+</body>
+</html>
